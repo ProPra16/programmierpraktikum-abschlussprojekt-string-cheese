@@ -2,23 +2,8 @@ Start-Treffen des STRING_CHEESE 21.06.2016
 Ort: Mensa unten,bei der Treppe,Gebäude25,HHU 
 Zeit:14 Uhr bis 15:30 Uhr
 Anwesende:
-Protokollantin: Liu QiaoXi
 Tagesordnung:
-1. Overview von Gruppenprojekt
-- (Viele Unklare Punkte. bzw. Wo sollen wir anfangen?)
+1. Overview von Porjekt7
+2. Fragen stellen und diskutieren
+3. Plan für diese Woche verteilen
 
-2. Fragen über Projekt7 stellen und diskutieren
-- Was soll unsere Software machen?
-- Wie sieht das endlich aus?(GUI) > Ein paar Ideen aus Entwürfe. Die hilfen uns die konkrete Form von Sofeware zu bilden und die Funktion des Programms besser zu verstehen.Trotzdem können wir GUI später machen.
--...
-
-3. Brainstorm(User Story aufbauen)
-- User Story: Angenommen: ein Student von die erste Semester macht seine Aufgabe. Der soll zunächst Test schreiben bevor der Code für Programm schreibt. Damit benutzt der unsere Software zu schaffen seine ganz Aufgabe...
-- Branstorm: Klasse,Methode, die wir brauchen...(sowie CRC)
-
-4. Sonstiges
-- IDE feststellen(Intellij)
-- Wie benutzt man Git?
-
-5. Plan für diese Woche verteilen
-- Jede schreibt ein Test und testet mit JUnit.
