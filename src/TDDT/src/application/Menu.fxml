@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="655.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MenuController">
+   <children>
+      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="600.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Menu">
+            <items>
+              <MenuItem mnemonicParsing="false" text="open" />
+                  <MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
+                  <MenuItem mnemonicParsing="false" onAction="#close" text="Exit" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <Label fx:id="descriptionlabel" layoutX="7.0" layoutY="35.0" prefHeight="17.0" prefWidth="103.0" text="Description:" />
+      <Label layoutX="444.0" layoutY="36.0" prefHeight="17.0" prefWidth="44.0" text="Status:" />
+      <Label fx:id="statuslabel" layoutX="518.0" layoutY="36.0" prefHeight="17.0" prefWidth="68.0" text="RED" textFill="RED" />
+      <Button layoutX="360.0" layoutY="31.0" mnemonicParsing="false" onAction="#next" prefHeight="25.0" prefWidth="68.0" text="Next" />
+      <TextArea fx:id="editor" layoutX="10.0" layoutY="121.0" prefHeight="527.0" prefWidth="187.0" />
+      <TextArea fx:id="test" layoutX="215.0" layoutY="121.0" prefHeight="527.0" prefWidth="187.0" />
+      <ListView fx:id="exercises" layoutX="410.0" layoutY="121.0" prefHeight="527.0" prefWidth="179.0" />
+      <Label layoutX="14.0" layoutY="97.0" prefHeight="17.0" prefWidth="143.0" text="edit program:" />
+      <Label layoutX="215.0" layoutY="97.0" prefHeight="17.0" prefWidth="75.0" text="writing tests:" />
+   </children>
+</AnchorPane>
