@@ -18,20 +18,28 @@ public class Dom4jXML {
         System.out.println("ROOT:"+rootElement.getName());
         Iterator exerciseElement = rootElement.elementIterator("exercise"); // lesen die child node(naemlich <exercise> ein.
         while(exerciseElement.hasNext()){
-            Element recordElement =(Element)exerciseElement.next();
-            System.out.println("record:"+recordElement.getName());
-            Iterator classesElement = recordElement.elementIterator("classes");
-            Iterator testsElement = recordElement.elementIterator("tests");
-            while(classesElement.hasNext()) {
-
-                Element classesItem = (Element)classesElement.next();
+            Element childElement =(Element)exerciseElement.next();
+            System.out.println("CHILD:"+childElement.getName());
+            Iterator classesIterator = childElement.elementIterator("classes");
+            Iterator testsIterator = childElement.elementIterator("tests");
+            while(classesIterator.hasNext()) {
+                Element classesItem = (Element)classesIterator.next();
                 String classContent = classesItem.elementText("class");
+                Iterator classIterator =classesItem.elementIterator("class");
+                Element classNameElement =(Element)classIterator.next();
+                String className = classNameElement.attributeValue("name");
+                System.out.println("ClassName :"+className);
                 System.out.println(classContent);
             } // lesen die Elements unter  dem <classes> ein.
-            while(testsElement.hasNext()) {
-                System.out.println("tests");
-                Element tableItem = (Element)testsElement.next();
-                String testContent = tableItem.elementText("test");
+            while(testsIterator.hasNext()) {
+
+                Element testsItem = (Element)testsIterator.next();
+                Iterator classIterator =testsItem.elementIterator("test");
+                Element testNameElement =(Element)classIterator.next();
+                String testName = testNameElement.attributeValue("name");
+
+                String testContent = testsItem.elementText("test");
+                System.out.println("TestName :"+testName);
                 System.out.println(testContent);
             } // lesen die Elements unter dem <tests> ein.
         }
