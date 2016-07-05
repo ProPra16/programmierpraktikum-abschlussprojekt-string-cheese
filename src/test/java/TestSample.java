@@ -9,6 +9,11 @@ FileChooser fileChooser= new FileChooser();
 fileChooser.setTitle("Katalog");
 assertEquals("Katalog",fileChooser.evaluate());
     }
+     @Test
+    public void testGetTestCode() throws Exception{
+
+    }
+    
     
     @Test
     public void testDocumentOfClassName() throws Exception{
