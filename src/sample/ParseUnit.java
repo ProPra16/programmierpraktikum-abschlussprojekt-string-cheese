@@ -28,6 +28,7 @@ public class ParseUnit {
     public ParseUnit(String xmlFileName, boolean babysteps) {
        this.xmlFileName=xmlFileName;
         createJavaFile(babysteps);
+        System.out.print(direction);
     }
 
     public void parseXML() throws Exception {
@@ -82,8 +83,9 @@ public class ParseUnit {
                 x=1;
             else x=0;
 
-            fileForTest = new File(direction + "sample/" + testName[x] + ".java");
-            fileForClass = new File(direction + "sample/" + className[x] + ".java");
+            String    testDirection=direction.replaceAll("out/","test/");
+            fileForTest = new File(testDirection + testName[x] + ".java");
+            fileForClass = new File(testDirection + className[x] + ".java");
 
             if (!fileForTest.exists())
                 fileForTest.createNewFile();

@@ -1,71 +1,38 @@
 package sample;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.net.URI;
+import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-
+import org.junit.runner.JUnitCore;
 import vk.core.api.CompilationUnit;
 import vk.core.api.CompilerResult;
 import vk.core.api.JavaStringCompiler;
 import vk.core.api.TestResult;
 import javax.tools.*;
-import java.io.*;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 import java.util.HashSet;
 import java.time.Duration;
 import java.time.Instant;
+import org.junit.runner.Result;
 /**
  * Created by lqx on 07/07/16.
  */
 public class MyCompiler implements JavaStringCompiler {
-    String direction0 = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+
+    String direction = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     CompilationUnit compilationUnit;
     String name;
     MyCompilerResult compilerResult;
     MyTestResult testResult;
-    private StringBuilder outMsg = new StringBuilder();
-    private StringBuilder ce = new StringBuilder();
-    String error;//Exception of running
-    boolean isRunningError;
     private String getClassOutput(){
-        //设置class文件的存放位置
-        if(System.getProperty("java.class.path").contains("bin")) return "bin/";
-        else return "./";
+        String    testDirection=direction.replaceAll("out/","test/");
+        return testDirection;
     }
-    private class StringSourceJavaObject extends SimpleJavaFileObject {
-        private String content = null;
-        public StringSourceJavaObject(String name, String content) {
-            super(URI.create(name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
-            this.content = content;
-        }
-        public CharSequence getCharContent(boolean ignoreEncodingErrors) {
-            return content;
-        }
-    }
-
     public MyCompiler(String fileName) {
         this.name = fileName;
         this.compilationUnit = getCompilationUnitByName(fileName);
+       Path a= compilationUnit.getSourceFile();
+       System.out.println("COMPILATIONUNIT:"+a.toString());
     }
-
     /**
      * Compiles the provided compilation units and runs all tests. This method
      * must be called before getting the results.
@@ -87,51 +54,39 @@ public class MyCompiler implements JavaStringCompiler {
     }
 
     public void compileAndRunTests() {
-
-        PrintStream ps = null;
-        FileInputStream fis = null;
-        BufferedReader br = null;
-        //保存标准输出流
-        InputStream stdIn = System.in;
-        //保存标准输入流
-        PrintStream stdOut = System.out;
         try {
-            System.out.println("RUNNNN");
-            Instant startTime = Instant.now();
-            stdOut.println(compilationUnit.getClassName());
-for(int i=0;i<5;i++)
-    stdOut.println(direction0);
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            MyDiagnosticListener diagnosticListener = new MyDiagnosticListener();
-
-            // DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-            StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, null, null);
-            String fullQuanlifiedFileName = direction0 + "sample/" + compilationUnit.getClassName() ;
-            Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(fullQuanlifiedFileName));
-            fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(new File[] { new File(getClassOutput()) }));
-            StringSourceJavaObject sourceObject = new MyCompiler.StringSourceJavaObject(name, compilationUnit.getClassContent());
-            Iterable<? extends JavaFileObject> fileObjects = Arrays.asList(sourceObject);
-
-            JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, null, null, fileObjects);
-
-           // FileOutputStream err = new FileOutputStream(compilationUnit.getClassName() + "_Error.txt"); // speichern (Error)Info als ein Datei.
-            int compilationResult = compiler.run(null, null, null, fullQuanlifiedFileName);
-            boolean result = task.call();
-            Instant endTime = Instant.now();
-            int results = compiler.run(null, null, null, fullQuanlifiedFileName);
-
-            stdOut.println("?:" + result + results + "compilationResult:" + compilationResult);
-            if (results == 0) {
-                System.out.println("continue:");
-                Runtime run = Runtime.getRuntime();
-                System.out.println(run.freeMemory());
+            if (!compilationUnit.isATest()) {
+                String path = this.getClassOutput() + compilationUnit.getSourceFile().toString();
+                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+                MyDiagnosticListener diagnosticListener = new MyDiagnosticListener();
+                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, null, null);
+                System.out.println("RUNNNN:" + this.getClassOutput());
+                Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(path));
+                JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, null, null, javaFileObjects);
+                int compilationResult = compiler.run(null, null, null, path);
+                boolean result = task.call();
+                if (compilationResult == 0) {
+                    System.out.println("continue:");
+                    Runtime run = Runtime.getRuntime();
+                    System.out.println(run.freeMemory());
+                }
             }
-            Duration compileDuration = Duration.between(startTime, endTime);
-            compilerResult = new MyCompilerResult(name);
-            compilerResult.compileDuration=compileDuration;
-            stdOut.println("TIMING:"+compileDuration.toMillis());
+            }catch(Exception e){
+            }
 
-        } catch (Exception e) {
+        if (compilationUnit.isATest())
+        {
+            Class c= this.compilationUnit.getClassName().getClass();
+            Instant first = Instant.now();
+            Result result = JUnitCore.runClasses(c);
+            Instant second = Instant.now();
+            System.out.println("TestResult:"+result.wasSuccessful());
+            Duration duration = Duration.between(first, second);
+            System.out.println("Duration:"+duration.toMillis()+"ms");
+            int NumberOfFailedTests=result.getFailureCount();
+            int NumberOfIgnoredTests= result.getIgnoreCount();
+            int NumberOfSuccessfulTests=result.getRunCount()-NumberOfIgnoredTests-NumberOfFailedTests;
+           testResult = new MyTestResult(duration,NumberOfFailedTests,NumberOfSuccessfulTests,NumberOfIgnoredTests);
         }
     }
 

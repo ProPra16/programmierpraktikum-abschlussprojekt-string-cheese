@@ -13,7 +13,8 @@ public class MyJavaFile {
     private boolean isATest;
 
     public MyJavaFile(String fileName) {
-        this.javaFile = new File(direction +"sample/"+ fileName + ".java");
+        String    testDirection=direction.replaceAll("out/","test/");
+        this.javaFile = new File(testDirection+ fileName + ".java");
         this.fileName = fileName;
         if (fileName.contains("Test"))
             isATest = true;
@@ -33,8 +34,6 @@ public class MyJavaFile {
                 fileContent = stringBuilder.toString();
                 read.close();
             }
-
-
         } catch (Exception e) {}
     }
     public String getFileContent() {

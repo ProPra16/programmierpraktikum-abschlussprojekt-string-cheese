@@ -18,7 +18,12 @@ public class MyTestResult implements TestResult {
     int NumberOfFailedTests;
     int NumberOfIgnoredTests;
     ArrayList<TestFailure> testFailures;
-
+public MyTestResult(Duration duration,int NumberOfSuccessfulTests,int NumberOfFailedTests,int NumberOfIgnoredTests){
+    duration=this.duration;
+    NumberOfFailedTests=this.NumberOfFailedTests;
+    NumberOfSuccessfulTests=this.NumberOfSuccessfulTests;
+    NumberOfIgnoredTests=this.NumberOfIgnoredTests;
+}
     public   int getNumberOfSuccessfulTests(){
         return NumberOfSuccessfulTests;}
     /**

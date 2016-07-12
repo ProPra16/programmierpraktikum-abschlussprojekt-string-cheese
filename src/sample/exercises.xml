@@ -24,7 +24,8 @@
 
             @Test
             public void dieZahlEinsErgibtI() {
-            String berechnet = RomanNumbers.roman(1);
+            RomanNumbers a = new RomanNumbers();
+            String berechnet = a.roman(1);
             String erwartet = "I";
             assertEquals(erwartet, berechnet);
             }
