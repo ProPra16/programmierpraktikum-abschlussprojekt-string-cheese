@@ -5,25 +5,28 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0"
       xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MyController">
     <children>
-        <Button fx:id="button" layoutX="19.0" layoutY="217.0" mnemonicParsing="false"
-                onAction="#clickButton" prefHeight="25.0" prefWidth="550.0" text="clean it up" />
-        <HBox fx:id="hBox" layoutY="2.0" prefHeight="25.0" prefWidth="600.0">
+        <Button fx:id="save" layoutX="25.0" layoutY="240.0" mnemonicParsing="false"
+                onAction="#clickSaveButton" prefHeight="25.0" prefWidth="100.0" text="saveandtest" />
+        <HBox fx:id="hBox" layoutX="25.0" layoutY="2.0" prefHeight="25.0" prefWidth="400.0">
 
                 <Button fx:id="withbabysteps" mnemonicParsing="false" text="Catalog with babysteps"
                 onAction="#setWithbabysteps">
 
                 </Button>
 
-                <Button fx:id="withoutbabysteps" mnemonicParsing="false" text="Catalog without babysteps"
+                <Button fx:id="withoutbabysteps"   mnemonicParsing="false" text="Catalog without babysteps"
                         onAction="#setWithoutbabysteps">
 
                 </Button>
 
         </HBox>
-        <TextArea fx:id="textArea2" layoutX="19.0" layoutY="252.0" prefHeight="134.0" prefWidth="550.0" text="Welcome!" />
-        <TextArea fx:id="textArea1" layoutX="20.0" layoutY="40.0" prefHeight="160.0" prefWidth="550.0" />
+        <VBox fx:id="colorPanel" layoutX="460" layoutY="4.0" prefHeight="23.0" prefWidth="100.0" style="-fx-border-color: black" ></VBox>
+        <Label layoutX="25.0" layoutY="50.0" text="Class code"></Label>
+        <TextArea fx:id="textArea2" layoutX="25.0" layoutY="300.0" prefHeight="160.0" prefWidth="550.0"/>
+        <Label layoutX="25.0" layoutY="283.0" text="Test code"></Label>
+        <TextArea fx:id="textArea1" layoutX="25.0" layoutY="68.0" prefHeight="160.0" prefWidth="550.0" />
     </children>
 </Pane>

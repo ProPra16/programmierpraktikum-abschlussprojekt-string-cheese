@@ -95,10 +95,28 @@ public class ParseUnit {
            BufferedWriter bw2 = new BufferedWriter(new FileWriter(fileForClass));
             bw2.write(this.classContent[x]);
             bw2.close();
-           this.javaFileForTest=new MyJavaFile(fileForTest.getName()) ;
-            this.javaFileForClass=new MyJavaFile(fileForClass.getName()) ;
+           javaFileForTest=new MyJavaFile(fileForTest.getName()) ;
+            javaFileForClass=new MyJavaFile(fileForClass.getName()) ;
 
         } catch (Exception e) {}
 
+    }
+    public MyJavaFile getJavaClassFile(){
+        return javaFileForClass;
+    }
+    public MyJavaFile getJavaTestFile(){
+        return javaFileForTest;
+    }
+    public String getWithBabystepsTestName(){
+        return testName[1];
+    }
+    public String getWithBabystepsClassName(){
+        return className[1];
+    }
+    public String getWithoutBabystepsClassName(){
+        return className[0];
+    }
+    public String getWithoutBabystepsTestName(){
+        return testName[0];
     }
 }

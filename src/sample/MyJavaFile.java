@@ -11,7 +11,6 @@ public class MyJavaFile {
     private String fileName;
     private String fileContent;
     private boolean isATest;
-    private boolean babysteps;
 
     public MyJavaFile(String fileName) {
         this.javaFile = new File(direction +"sample/"+ fileName + ".java");
@@ -24,16 +23,22 @@ public class MyJavaFile {
             if (javaFile.isFile() && javaFile.exists()) {
                 InputStreamReader read = new InputStreamReader(new FileInputStream(javaFile));
                 BufferedReader bufferedReader = new BufferedReader(read);
+                StringBuilder stringBuilder = new StringBuilder();
                 String line = null;
                 while ((line = bufferedReader.readLine()) != null) {
-                    fileContent = fileContent + line;
+                    stringBuilder.append(line);
+                   stringBuilder.append("\n");
                 }
                 bufferedReader.close();
+                fileContent = stringBuilder.toString();
                 read.close();
             }
+
+
         } catch (Exception e) {}
     }
     public String getFileContent() {
+
         return fileContent;
     }
     public String getFileName() {
