@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<excercises>
+<exercise name="Roemische Zahlen">
+    <description>Konvertiert arabische in roemische Zahlen.</description>
+    <classes>
+         <class name="RomanNumbers">
+             public class RomanNumbers {
+
+             public static String roman(int n) {
+             return "I am groot.";
+             }
+
+             }
+
+         </class>
+    </classes>
+    <tests>
+        <test name="RomanNumbersTest">
+            import static org.junit.Assert.*;
+            import org.junit.*;
+
+            public class RomanNumbersTest {
+
+
+            @Test
+            public void dieZahlEinsErgibtI() {
+            RomanNumbers a = new RomanNumbers();
+            String berechnet = a.roman(1);
+            String erwartet = "I";
+            assertEquals(erwartet, berechnet);
+            }
+            }
+        </test>
+    </tests>
+    <config>
+        <babysteps value="False" />
+        <timetracking value="True" />
+    </config>
+</exercise>
+<exercise name="Roemische Zahlen">
+<description>Konvertiert arabische in roemische Zahlen.</description> <classes>
+    <class name="RomanNumberConverter">
+        public class RomanNumberConverter {
+        }
+    </class>
+</classes>
+<tests>
+    <test name="RomanNumbersTest">
+        import static org.junit.Assert.*;
+        import org.junit.Test;
+        public class RomanNumbersTest {
+        @Test
+        public void testSomething() {
+        } }
+    </test>
+</tests>
+<config>
+    <babysteps value="True" time="2:00" />
+    <timetracking value="True" />
+</config>
+</exercise>
+        </excercises>
