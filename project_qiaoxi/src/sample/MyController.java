@@ -37,10 +37,12 @@ VBox colorPanel = new VBox();
     Button withbabysteps = new Button() ;
     @FXML
     Button withoutbabysteps = new Button() ;
-
+   private MyCompiler compiler;
 
     public void init(Stage primaryStage){
-    this.stage = stage;
+        this.stage = stage;
+        textAreaForClass.setDisable(true);
+
 }
     public void setWithbabysteps(){
         final FileChooser fileChooser =new FileChooser();
@@ -55,10 +57,10 @@ VBox colorPanel = new VBox();
             MyJavaFile classFile = new MyJavaFile(parseUnit.getWithBabystepsClassName());
             textAreaForTest.setText(testFile.getFileContent());
             textAreaForClass.setText(classFile.getFileContent());
-           MyCompiler myCompiler1 = new MyCompiler(testFile.getFileName());
-           myCompiler1.compileAndRunTests();
-            System.out.println(myCompiler1.getTestResult().toString());
-            textAreaForTestResults.setText(myCompiler1.getTestResult().toString());
+           MyCompiler compiler = new MyCompiler(testFile.getFileName());
+            compiler.compileAndRunTests();
+            System.out.println(compiler.getTestResult().toString());
+            textAreaForTestResults.setText(compiler.getTestResult().toString());
             //  MyCompiler myCompiler2 = new MyCompiler(parseUnit.javaFileForClass.getFileName());
             //   myCompiler2.compileAndRunTests();
         }
@@ -76,20 +78,21 @@ VBox colorPanel = new VBox();
             MyJavaFile classFile = new MyJavaFile(parseUnit.getWithoutBabystepsClassName());
             textAreaForTest.setText(testFile.getFileContent());
             textAreaForClass.setText(classFile.getFileContent());
-            MyCompiler myCompiler1= new MyCompiler(testFile.getFileName());
-            myCompiler1.compileAndRunTests();
-            textAreaForTestResults.setText(myCompiler1.getTestResult().toString());
+            compiler= new MyCompiler(testFile.getFileName());
+
         }
     }
 
     @FXML
      void clickSaveButton(){
-
-
+        compiler.compileAndRunTests();
+        textAreaForTestResults.setText(compiler.getTestResult().toString());
+if(compiler.getTestResult().getNumberOfFailedTests()==1)
+        textAreaForClass.setDisable(false);
        // String text = textAreaForTest.getText();
        // textAreaForClass.setText(text);
       //  textAreaForTest.clear();
-      //  changeColor();
+       changeColor();
     }
 @FXML
     void changeColor() {
