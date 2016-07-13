@@ -1,0 +1,1 @@
+Hier speichert die .java Dateien als Resources to testieren.
