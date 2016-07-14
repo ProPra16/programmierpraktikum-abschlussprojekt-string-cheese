@@ -15,10 +15,10 @@ import javafx.scene.text.Text;
 import java.text.DecimalFormat;
 
 public class MyClock extends Parent {
-    DecimalFormat df = new DecimalFormat("000");
+
     boolean running;
    private int timing=1;
-    public MyClock() {}
+    public MyClock() { running=false;}
 
     public void reset() {
         running = false;
@@ -51,5 +51,11 @@ public class MyClock extends Parent {
     }
     public int getTiming(){
         return timing;
+    }
+    public boolean isRun(){
+        if(running)
+        return true;
+        else
+            return false;
     }
 }

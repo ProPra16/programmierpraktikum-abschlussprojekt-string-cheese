@@ -1,9 +1,10 @@
 package sample;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import com.sun.javafx.font.freetype.HBGlyphLayout;
@@ -19,7 +20,7 @@ public class MyController {
     HBox hBox;
 
     @FXML
-    VBox clock;
+    HBox tracking;
 
     @FXML
     TextArea textAreaForTest;
@@ -28,7 +29,7 @@ public class MyController {
     TextArea textAreaForClass;
 
     @FXML
-    Label textAreaForTestResults;
+    Label testResults;
 
     @FXML
     Button save = new Button();
@@ -43,7 +44,7 @@ public class MyController {
     Button withbabysteps = new Button();
     @FXML
     Button withoutbabysteps = new Button();
-
+    String direction = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     private MyCompiler compilerForTest;
     private MyCompiler compilerForClass;
 private String status;
@@ -53,11 +54,27 @@ private String status;
     private MyTracking myTracking;
 
     public void init(Stage primaryStage) {
+
+      /*  String error=null;
+        File a=new File(direction+"errorstracking.txt");
+        try{FileReader fr=new FileReader(a);
+            BufferedReader br= new BufferedReader(fr);
+            String line = null;
+
+            while((line=br.readLine())!=null)
+             error=error+line;
+            br.close();
+        }catch(Exception e){} */
+        back.setOnAction(e ->{AlertBox track = new AlertBox(); track.display("EEE","error");});
         this.stage = stage;
         textAreaForClass.setDisable(true);
         colorPanel.setStyle("-fx-background-color: grey;");
         String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath()+"test";
         File fp = new File(filePath);
+
+
+
+
         if (!fp.exists()) {
             fp.mkdirs();
         }
@@ -65,8 +82,9 @@ private String status;
         gClock = new MyClock();
         wClock = new MyClock();
         myTracking = new MyTracking(rClock,gClock,wClock);
-        clock.getChildren().addAll(myTracking);
+        tracking.getChildren().add(myTracking);
         System.out.println("CLOCKKKK::::"+rClock);
+
     }
     @FXML
     public void setWithbabysteps() {
@@ -76,6 +94,7 @@ private String status;
         wClock.reset();
         rClock.reset();
         rClock.runClock();
+        myTracking.refresh();
     }
     @FXML
     public void setWithoutbabysteps() {
@@ -86,25 +105,30 @@ private String status;
         wClock.reset();
         rClock.reset();
         rClock.runClock();
+        myTracking.refresh();
     }
 
     @FXML
     void clickSaveButton() {
-        MyJavaFile testFile =new MyJavaFile(compilerForTest.name);
-        MyJavaFile classFile =new MyJavaFile(compilerForClass.name);
-        if(testFile!=null &&classFile!=null ) {
-           saveFile(textAreaForTest.getText(), testFile);
-           saveFile(textAreaForClass.getText(), classFile);
-       }
+        MyJavaFile testFile = new MyJavaFile(compilerForTest.name);
+        MyJavaFile classFile = new MyJavaFile(compilerForClass.name);
+        if (testFile != null && classFile != null) {
+            saveFile(textAreaForTest.getText(), testFile);
+            saveFile(textAreaForClass.getText(), classFile);
+        }
         compilerForClass.compileAndRunTests();
         compilerForTest.compileAndRunTests();
-        textAreaForTestResults.setText(compilerForTest.getTestResult().toString());
-        if (compilerForTest.getTestResult().getNumberOfFailedTests() != 0)
-        {  textAreaForClass.setDisable(false);
+        testResults.setText(compilerForTest.getTestResult().toString());
+
+        if (compilerForTest.getTestResult().getNumberOfFailedTests() != 0) {
+            textAreaForClass.setDisable(false);
         }
         changeColor(compilerForTest);
-        myTracking.refresh();
-    }
+
+            myTracking.configureHbox();
+        }
+
+
 
     @FXML
     void changeColor(MyCompiler compilerForTest) {
@@ -142,7 +166,9 @@ private String status;
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
         }
         else fileName="This File doesn't exist.";
-        return fileName;}
+        return fileName;
+
+    }
 
     public void chooseCatalog(boolean babysteps){
         String fileName=setCatalog();

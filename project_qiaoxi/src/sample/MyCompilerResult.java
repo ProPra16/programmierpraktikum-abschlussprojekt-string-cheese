@@ -12,25 +12,23 @@ import java.util.Collection;
 /**
  * Created by lqx on 07/07/16.
  */
-public class MyCompilerResult implements CompilerResult {
+public class MyCompilerResult {
     String name;
     Duration compileDuration;
     boolean hasCompileErrors;
-    Collection<CompileError> errors;
-    /**
-     * @return true, if and only if the compilation process produced no error
-     *         messages
-     */
-    public MyCompilerResult(String name){
+    String errors;
+
+    public MyCompilerResult(String name,Duration duration,boolean hasCompileErrors,String errors){
+
         this.name=name;
+        this.compileDuration=duration;
+        this.hasCompileErrors=hasCompileErrors;
+        this.errors=errors;
     }
     public boolean hasCompileErrors(){
        return hasCompileErrors;
    }
 
-    /**
-     * @return Duration of the compilation process
-     */
   public  Duration getCompileDuration(){
 
 
@@ -38,11 +36,7 @@ public class MyCompilerResult implements CompilerResult {
     }
 
 
-    /**
-     * @param cu - a compilation unit
-     * @return all errors for that compilation unit
-     */
- public   Collection<CompileError> getCompilerErrorsForCompilationUnit(CompilationUnit cu){
+ public  String getCompilerErrorsForCompilationUnit(CompilationUnit cu){
 
         return errors;
     }

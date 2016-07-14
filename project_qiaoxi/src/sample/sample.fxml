@@ -16,25 +16,20 @@
 
                 <Button fx:id="withbabysteps" mnemonicParsing="false" text="Catalog with babysteps"
                 onAction="#setWithbabysteps">
-
                 </Button>
-
                 <Button fx:id="withoutbabysteps"   mnemonicParsing="false" text="Catalog without babysteps"
                         onAction="#setWithoutbabysteps">
-
                 </Button>
-
         </HBox>
-        <VBox fx:id="colorPanel" layoutX="460" layoutY="4.0" prefHeight="23.0" prefWidth="200.0" style="-fx-border-color: black" ></VBox>
-        <VBox fx:id="clock" layoutX="460" layoutY="500" prefHeight="80" prefWidth="200"></VBox>
+        <VBox fx:id="colorPanel" layoutX="435" layoutY="4.0" prefHeight="23.0" prefWidth="200.0" style="-fx-border-color: black" ></VBox>
+        <HBox  layoutX="435" layoutY="350"  prefHeight="80" prefWidth="200" >
+            <Label layoutX="435" layoutY="350" prefHeight="20" alignment="TOP_LEFT" text="Tracking"/>
+            <HBox fx:id="tracking" layoutX="435" layoutY="370" alignment="CENTER_LEFT" />
+        </HBox>
         <Label layoutX="15.0" layoutY="50.0" text="Class code"></Label>
         <Label layoutX="435.0" layoutY="50.0" text="test results"></Label>
         <TextArea fx:id="textAreaForTest" layoutX="15.0" layoutY="370.0" prefHeight="260.0" prefWidth="400.0"/>
-        <Label fx:id="textAreaForTestResults" layoutX="435.0" layoutY="68.0" prefHeight="300.0" prefWidth="400.0" />
-
-
-
-
+        <Label fx:id="testResults" layoutX="435.0" layoutY="68.0" prefHeight="260.0" prefWidth="400.0" />
         <Label layoutX="15.0" layoutY="350.0" text="Test code"></Label>
         <TextArea fx:id="textAreaForClass" layoutX="15.0" layoutY="68.0" prefHeight="270.0" prefWidth="400.0" />
     </children>

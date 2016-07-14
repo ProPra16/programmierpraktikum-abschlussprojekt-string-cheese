@@ -1,42 +1,56 @@
 package sample;
 
 import javafx.scene.Parent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ClosePath;
 import javafx.scene.shape.Rectangle;
 
 public class MyTracking extends Parent {
-
-    MyClock red;
-    MyClock green;
-    MyClock white;
-    Rectangle chart1;
-    Rectangle chart2;
-    Rectangle chart0;
+    int[] last=new int[3];
+    Paint[] paints=new Paint[3];
+   int[] percent= new int[3];
+    MyClock[] clocks=new MyClock[3];
     private final int scale = 10;
-    private VBox vbox = new VBox();
+    private HBox hbox = new HBox();
     public MyTracking(MyClock red,MyClock green,MyClock white) {
-        this.red = red;
-        this.green = green;
-        this.white = white;
-        configureVbox();
-        getChildren().addAll(vbox);
+        this.clocks[0] = red;
+        this.clocks[1] = green;
+        this.clocks[2] = white;
+        this.paints[0]=Color.RED;
+       this. paints[1]= Color.GREEN;
+      this.  paints[2]=Color.WHITE;
+        for(int i=0;i<3;i++)
+        {last[i]=0;}
+        configureHbox();
+        getChildren().add(hbox);
     }
 
-    private void configureVbox() {
-        createBackground();
-        vbox.getChildren().addAll(chart0,chart1,chart2);
-        vbox.setSpacing(1);
+    public void configureHbox() {
+        Rectangle chart=new Rectangle(1,1);
+        for(int i=0;i<3;i++){
+                if(clocks[i].isRun()) {
+                    chart = new Rectangle((clocks[i].getTiming() - last[i]) * scale, scale, paints[i]);
+                    last[i] = clocks[i].getTiming();
+                }
+           }
+        hbox.getChildren().add(chart);
+
     }
 
-    private  void createBackground() {
-        chart0 = new Rectangle(red.getTiming()*scale,scale,Color.RED);
-        chart1 = new Rectangle(green.getTiming()*scale,scale,Color.GREEN);
-        chart2 = new Rectangle(white.getTiming()*scale,scale,Color.WHITE);
-
-    }
     public void refresh(){
-        vbox.getChildren().clear();
-        configureVbox();
+        hbox.getChildren().clear();
+        configureHbox();
+    }
+    public void result(){
+        int total= 0;
+       percent =new int[3];
+        for(int i=0;i<3;i++) {
+            percent[i] = clocks[i].getTiming();
+           total=total+percent[i];
+        }
+for(int i=0;i<3;i++)
+        percent[i]=200*percent[i]/total;
     }
 }
