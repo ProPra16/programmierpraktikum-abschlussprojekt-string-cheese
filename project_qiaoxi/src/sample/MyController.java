@@ -1,5 +1,6 @@
 package sample;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
@@ -13,7 +14,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.event.ActionEvent;
 public class MyController {
-Stage stage;
+    Stage stage;
     @FXML
     HBox hBox;
 
@@ -29,74 +30,110 @@ Stage stage;
     @FXML
     Button save = new Button();
 
-@FXML
-VBox colorPanel = new VBox();
-
+    @FXML
+    VBox colorPanel = new VBox();
 
     @FXML
-    Button withbabysteps = new Button() ;
-    @FXML
-    Button withoutbabysteps = new Button() ;
-   private MyCompiler compiler;
+    Button back = new Button();
 
-    public void init(Stage primaryStage){
+    @FXML
+    Button withbabysteps = new Button();
+    @FXML
+    Button withoutbabysteps = new Button();
+
+    private MyCompiler compilerForTest;
+    private MyCompiler compilerForClass;
+
+
+    public void init(Stage primaryStage) {
         this.stage = stage;
         textAreaForClass.setDisable(true);
-
-}
-    public void setWithbabysteps(){
-        final FileChooser fileChooser =new FileChooser();
-        File file = fileChooser.showOpenDialog(stage);
-       fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        if(file!=null){
-            String fileName=file.getName();
-            fileName=fileName.substring(0,fileName.lastIndexOf("."));
-            System.out.println("openbabysteps:"+fileName);
-            ParseUnit parseUnit = new ParseUnit(fileName,true);
-            MyJavaFile testFile = new MyJavaFile(parseUnit.getWithBabystepsTestName());
-            MyJavaFile classFile = new MyJavaFile(parseUnit.getWithBabystepsClassName());
-            textAreaForTest.setText(testFile.getFileContent());
-            textAreaForClass.setText(classFile.getFileContent());
-           MyCompiler compiler = new MyCompiler(testFile.getFileName());
-            compiler.compileAndRunTests();
-            System.out.println(compiler.getTestResult().toString());
-            textAreaForTestResults.setText(compiler.getTestResult().toString());
-            //  MyCompiler myCompiler2 = new MyCompiler(parseUnit.javaFileForClass.getFileName());
-            //   myCompiler2.compileAndRunTests();
+        colorPanel.setStyle("-fx-background-color: red;");
+        String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath()+"test";
+        System.out.println(filePath);
+        File fp = new File(filePath);
+        // 创建目录
+        if (!fp.exists()) {
+            fp.mkdirs();// 目录不存在的情况下，创建目录。
         }
-   }
-    public void setWithoutbabysteps() throws IOException {
-        final FileChooser fileChooser =new FileChooser();
-        File file = fileChooser.showOpenDialog(stage);
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        if(file!=null) {
-            String fileName = file.getName();
-            fileName = fileName.substring(0, fileName.lastIndexOf("."));
-            System.out.println("openwithoutbabysteps:" + fileName);
-            ParseUnit parseUnit = new ParseUnit(fileName, false);
-            MyJavaFile testFile = new MyJavaFile(parseUnit.getWithoutBabystepsTestName());
-            MyJavaFile classFile = new MyJavaFile(parseUnit.getWithoutBabystepsClassName());
-            textAreaForTest.setText(testFile.getFileContent());
-            textAreaForClass.setText(classFile.getFileContent());
-            compiler= new MyCompiler(testFile.getFileName());
 
-        }
+    }
+    @FXML
+    public void setWithbabysteps() {
+       chooseCatalog(true);
+    }
+    @FXML
+    public void setWithoutbabysteps() {
+        chooseCatalog(false);
     }
 
     @FXML
-     void clickSaveButton(){
-        compiler.compileAndRunTests();
-        textAreaForTestResults.setText(compiler.getTestResult().toString());
-if(compiler.getTestResult().getNumberOfFailedTests()==1)
-        textAreaForClass.setDisable(false);
-       // String text = textAreaForTest.getText();
-       // textAreaForClass.setText(text);
-      //  textAreaForTest.clear();
-       changeColor();
+    void clickSaveButton() {
+        MyJavaFile testFile =new MyJavaFile(compilerForTest.name);
+        MyJavaFile classFile =new MyJavaFile(compilerForClass.name);
+        if(testFile!=null &&classFile!=null ) {
+           saveFile(textAreaForTest.getText(), testFile);
+           saveFile(textAreaForClass.getText(), classFile);
+       }
+       compilerForClass.compileAndRunTests();
+        compilerForTest.compileAndRunTests();
+        textAreaForTestResults.setText(compilerForTest.getTestResult().toString());
+        if (compilerForTest.getTestResult().getNumberOfFailedTests() != 0)
+        {  textAreaForClass.setDisable(false);
+        }
+        changeColor(compilerForTest);
     }
-@FXML
-    void changeColor() {
-    colorPanel.setStyle("-fx-background-color: red;");
-}
 
+    @FXML
+    void changeColor(MyCompiler compilerForTest) {
+        int failsNumber =compilerForTest.getTestResult().getNumberOfFailedTests();
+       switch(failsNumber) {
+           case 1:
+               colorPanel.setStyle("-fx-background-color: red;");break;
+           case 0:
+               colorPanel.setStyle("-fx-background-color: white;");break;
+           default:
+               colorPanel.setStyle("-fx-background-color: green;");break;
+       }
+    }
+
+    public String setCatalog() {
+        final FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showOpenDialog(stage);
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        String fileName = file.getName();
+        if (file != null) {
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+        }
+        else fileName="This File doesn't exist.";
+        return fileName;}
+
+    public void chooseCatalog(boolean babysteps){
+        String fileName=setCatalog();
+        ParseUnit parseUnit = new ParseUnit(fileName, babysteps);
+        MyJavaFile testFile;
+        MyJavaFile classFile;
+        if(!babysteps) {
+            testFile = new MyJavaFile(parseUnit.getWithoutBabystepsTestName());
+            classFile = new MyJavaFile(parseUnit.getWithoutBabystepsClassName());
+        }
+        else
+        {
+            testFile = new MyJavaFile(parseUnit.getWithBabystepsTestName());
+            classFile = new MyJavaFile(parseUnit.getWithBabystepsClassName());
+        }
+        textAreaForTest.setText(testFile.getFileContent());
+        textAreaForClass.setText(classFile.getFileContent());
+        compilerForTest = new MyCompiler(testFile.getFileName());
+        compilerForClass = new MyCompiler(classFile.getFileName());
+    }
+    private void saveFile(String content, MyJavaFile file) {
+        try {
+            FileWriter fileWriter = new FileWriter(file.javaFile);
+            fileWriter.write(content);
+            fileWriter.close();
+
+        } catch (IOException e) {
+        }
+    }
 }

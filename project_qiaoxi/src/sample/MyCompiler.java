@@ -41,10 +41,7 @@ public class MyCompiler  {
        Path a= compilationUnit.getSourceFile();
        System.out.println("COMPILATIONUNIT:"+a.toString());
     }
-    /**
-     * Compiles the provided compilation units and runs all tests. This method
-     * must be called before getting the results.
-     */
+
     static class MyDiagnosticListener implements DiagnosticListener {
         @Override
         public void report(Diagnostic diagnostic) {
@@ -63,30 +60,34 @@ public class MyCompiler  {
 
     public void compileAndRunTests() {
 
-        /*   try{ if (!compilationUnit.isATest()) {
-                String path = this.getClassOutput() + compilationUnit.getSourceFile().toString();
+           try{ if (!compilationUnit.isATest()) {
+               String    testDirection=direction.replaceAll("out/","test/");
+
+               String[] path = new String[2];
+               path[1]=testDirection + compilationUnit.getClassName() + ".java";
+               path[0]=testDirection + compilationUnit.getClassName() + "Test.java";
                 JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-                MyDiagnosticListener diagnosticListener = new MyDiagnosticListener();
+
+               MyDiagnosticListener diagnosticListener = new MyDiagnosticListener();
                 StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, null, null);
-                System.out.println("RUNNNN:" + this.getClassOutput());
                 Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(path));
-                JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, null, null, javaFileObjects);
-                int compilationResult = compiler.run(null, null, null, path);
-                boolean result = task.call();
-                if (compilationResult == 0) {
-                    System.out.println("continue:");
-                    Runtime run = Runtime.getRuntime();
-                    System.out.println(run.freeMemory());
-                }
-            }
+               Iterable<String> options = Arrays.asList("-d", direction+"test/");
+                JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, options, null, javaFileObjects);
+
+               boolean success = task.call();
+               fileManager.close();
+               System.out.println((success) ? compilationUnit .getSourceFile()+"编译成功" :  compilationUnit .getSourceFile()+"编译失败");
+
+
+           }
         } catch (Exception e) {
-        }*/
+        }
 
         if (compilationUnit.isATest()) {
 
-            File root = new File(direction+"/test");
+            File root = new File(direction+"test");
             URLClassLoader classLoader = null;
-
+            System.out.println("TESTCOMPIL RUN:"+direction+"test");
             try {
                 classLoader = URLClassLoader.newInstance(new URL[]{root.toURI().toURL()});
             } catch (MalformedURLException e) {
@@ -100,6 +101,7 @@ public class MyCompiler  {
             }
             Instant first = Instant.now();
             Result result = JUnitCore.runClasses(cls);
+            System.out.println(cls);
             Instant second = Instant.now();
             int failureNumber = 0;
             ArrayList<MyTestFailure> testFailures = new ArrayList<MyTestFailure>();
@@ -108,14 +110,11 @@ public class MyCompiler  {
                 String methodName = failure.getDescription().toString().replaceAll("\\([^)]+\\)", "");
                 String testClassName = compilationUnit.getClassName();
                 String message = failure.getMessage().toString();
-
                 MyTestFailure testFailure = new MyTestFailure(testClassName,methodName , message);
                 testFailures.add(testFailure);
             }
-
             System.out.println("TestResult:" + result.wasSuccessful());
             Duration duration = Duration.between(first, second);
-
             int numberOfFailedTests = result.getFailureCount();
             int numberOfIgnoredTests = result.getIgnoreCount();
             int numberOfSuccessfulTests = result.getRunCount() - numberOfIgnoredTests - numberOfFailedTests;
@@ -123,9 +122,6 @@ public class MyCompiler  {
 
         }
     }
-
-
-
     /**
      * Get the information related to compilation (i.e., errors, warnings,
      * compiler info).
