@@ -19,6 +19,9 @@ public class MyController {
     HBox hBox;
 
     @FXML
+    VBox clock;
+
+    @FXML
     TextArea textAreaForTest;
 
     @FXML
@@ -43,28 +46,46 @@ public class MyController {
 
     private MyCompiler compilerForTest;
     private MyCompiler compilerForClass;
-
+private String status;
+    private MyClock rClock;
+    private MyClock gClock;
+    private MyClock wClock;
+    private MyTracking myTracking;
 
     public void init(Stage primaryStage) {
         this.stage = stage;
         textAreaForClass.setDisable(true);
-        colorPanel.setStyle("-fx-background-color: red;");
+        colorPanel.setStyle("-fx-background-color: grey;");
         String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath()+"test";
-        System.out.println(filePath);
         File fp = new File(filePath);
-        // 创建目录
         if (!fp.exists()) {
-            fp.mkdirs();// 目录不存在的情况下，创建目录。
+            fp.mkdirs();
         }
-
+        rClock = new MyClock();
+        gClock = new MyClock();
+        wClock = new MyClock();
+        myTracking = new MyTracking(rClock,gClock,wClock);
+        clock.getChildren().addAll(myTracking);
+        System.out.println("CLOCKKKK::::"+rClock);
     }
     @FXML
     public void setWithbabysteps() {
        chooseCatalog(true);
+        colorPanel.setStyle("-fx-background-color: red;");
+        gClock.reset();
+        wClock.reset();
+        rClock.reset();
+        rClock.runClock();
     }
     @FXML
     public void setWithoutbabysteps() {
+
         chooseCatalog(false);
+        colorPanel.setStyle("-fx-background-color: red;");
+        gClock.reset();
+        wClock.reset();
+        rClock.reset();
+        rClock.runClock();
     }
 
     @FXML
@@ -75,25 +96,40 @@ public class MyController {
            saveFile(textAreaForTest.getText(), testFile);
            saveFile(textAreaForClass.getText(), classFile);
        }
-       compilerForClass.compileAndRunTests();
+        compilerForClass.compileAndRunTests();
         compilerForTest.compileAndRunTests();
         textAreaForTestResults.setText(compilerForTest.getTestResult().toString());
         if (compilerForTest.getTestResult().getNumberOfFailedTests() != 0)
         {  textAreaForClass.setDisable(false);
         }
         changeColor(compilerForTest);
+        myTracking.refresh();
     }
 
     @FXML
     void changeColor(MyCompiler compilerForTest) {
         int failsNumber =compilerForTest.getTestResult().getNumberOfFailedTests();
        switch(failsNumber) {
-           case 1:
-               colorPanel.setStyle("-fx-background-color: red;");break;
-           case 0:
-               colorPanel.setStyle("-fx-background-color: white;");break;
-           default:
-               colorPanel.setStyle("-fx-background-color: green;");break;
+           case 1:{
+               colorPanel.setStyle("-fx-background-color: red;");
+               status="red";
+               rClock.runClock();
+               gClock.stopClock();
+               wClock.stopClock();
+               break;}
+           case 0:{
+               colorPanel.setStyle("-fx-background-color: white;");
+               status="white";
+               rClock.stopClock();
+               gClock.stopClock();
+               wClock.runClock();
+               break;}
+           default:{
+               colorPanel.setStyle("-fx-background-color: green;");
+               status="green";
+               rClock.stopClock();
+               gClock.runClock();
+               wClock.stopClock();break;}
        }
     }
 

@@ -25,11 +25,12 @@
                 </Button>
 
         </HBox>
-        <VBox fx:id="colorPanel" layoutX="460" layoutY="4.0" prefHeight="23.0" prefWidth="100.0" style="-fx-border-color: black" ></VBox>
+        <VBox fx:id="colorPanel" layoutX="460" layoutY="4.0" prefHeight="23.0" prefWidth="200.0" style="-fx-border-color: black" ></VBox>
+        <VBox fx:id="clock" layoutX="460" layoutY="500" prefHeight="80" prefWidth="200"></VBox>
         <Label layoutX="15.0" layoutY="50.0" text="Class code"></Label>
         <Label layoutX="435.0" layoutY="50.0" text="test results"></Label>
         <TextArea fx:id="textAreaForTest" layoutX="15.0" layoutY="370.0" prefHeight="260.0" prefWidth="400.0"/>
-        <Label fx:id="textAreaForTestResults" layoutX="435.0" layoutY="68.0" prefHeight="390.0" prefWidth="400.0" />
+        <Label fx:id="textAreaForTestResults" layoutX="435.0" layoutY="68.0" prefHeight="300.0" prefWidth="400.0" />
 
 
 
