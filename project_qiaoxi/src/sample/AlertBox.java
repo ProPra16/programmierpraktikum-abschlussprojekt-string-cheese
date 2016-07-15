@@ -17,15 +17,12 @@ public class AlertBox {
     final ScrollPane sp = new ScrollPane();
     final VBox vb = new VBox();
     Label fileName = new Label();
-    public AlertBox(int width,int height){
-        this.window.setMinWidth(width);
-        this.window.setMinHeight(height);
-    }
+
     public AlertBox(){
         VBox box = new VBox();
-        Scene scene = new Scene(box,180,180);
-        this.window.setMinWidth(300);
-        this.window.setMinHeight(300);
+        Scene scene = new Scene(box,480,480);
+        this.window.setMinWidth(500);
+        this.window.setMinHeight(500);
         window.setScene(scene);
         box.getChildren().addAll(sp,fileName);
         VBox.setVgrow(sp, Priority.ALWAYS);
@@ -46,6 +43,6 @@ public class AlertBox {
 
         window.showAndWait();
     }
-    
+
 
 }

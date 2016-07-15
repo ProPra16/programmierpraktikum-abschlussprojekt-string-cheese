@@ -32,6 +32,9 @@ public class MyController {
     Label testResults;
 
     @FXML
+    Label compileResults;
+
+    @FXML
     Button save = new Button();
 
     @FXML
@@ -39,6 +42,9 @@ public class MyController {
 
     @FXML
     Button back = new Button();
+
+    @FXML
+    Button analysis = new Button();
 
     @FXML
     Button withbabysteps = new Button();
@@ -52,28 +58,18 @@ private String status;
     private MyClock gClock;
     private MyClock wClock;
     private MyTracking myTracking;
+    MyJavaFile testFile;
+    MyJavaFile classFile;
 
     public void init(Stage primaryStage) {
 
-      /*  String error=null;
-        File a=new File(direction+"errorstracking.txt");
-        try{FileReader fr=new FileReader(a);
-            BufferedReader br= new BufferedReader(fr);
-            String line = null;
 
-            while((line=br.readLine())!=null)
-             error=error+line;
-            br.close();
-        }catch(Exception e){} */
-        back.setOnAction(e ->{AlertBox track = new AlertBox(); track.display("EEE","error");});
+       // analysis.setOnAction(e ->{AlertBox track = new AlertBox(); track.display("EEE","error");});
         this.stage = stage;
         textAreaForClass.setDisable(true);
         colorPanel.setStyle("-fx-background-color: grey;");
         String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath()+"test";
         File fp = new File(filePath);
-
-
-
 
         if (!fp.exists()) {
             fp.mkdirs();
@@ -109,18 +105,35 @@ private String status;
     }
 
     @FXML
+    void clickAnalysisButton() {
+           String error=null;
+        File a=new File(direction+"errorstracking.txt");
+        try{FileReader fr=new FileReader(a);
+            BufferedReader br= new BufferedReader(fr);
+            String line = null;
+
+            while((line=br.readLine())!=null)
+             error=error+"\n"+line;
+            br.close();
+        }catch(Exception e){}
+        AlertBox track = new AlertBox(); track.display("Tracking Anlaysis",error);
+    }
+    @FXML
     void clickSaveButton() {
-        MyJavaFile testFile = new MyJavaFile(compilerForTest.name);
-        MyJavaFile classFile = new MyJavaFile(compilerForClass.name);
+      testFile = new MyJavaFile(compilerForTest.getName());
+      classFile = new MyJavaFile(compilerForClass.getName());
         if (testFile != null && classFile != null) {
             saveFile(textAreaForTest.getText(), testFile);
             saveFile(textAreaForClass.getText(), classFile);
         }
+        System.out.println("TESTFFFFFF:"+testFile.getFileContent());
         compilerForClass.compileAndRunTests();
         compilerForTest.compileAndRunTests();
         testResults.setText(compilerForTest.getTestResult().toString());
-
-        if (compilerForTest.getTestResult().getNumberOfFailedTests() != 0) {
+        compileResults.setText(compilerForClass.getCompilerResult().toString());
+       int fails = compilerForTest.getTestResult().getNumberOfFailedTests();
+        int success = compilerForTest.getTestResult().getNumberOfSuccessfulTests();
+        if (fails !=0 && success!=0) {
             textAreaForClass.setDisable(false);
         }
         changeColor(compilerForTest);
@@ -128,7 +141,14 @@ private String status;
             myTracking.configureHbox();
         }
 
-
+    @FXML
+    void clickBackButton(){
+        System.out.println("CLICKBOTTON::::");
+       textAreaForTest.clear();
+        textAreaForTest.setText(testFile.getFileContent());
+        textAreaForClass.clear();
+        textAreaForClass.setText(classFile.getFileContent());
+    }
 
     @FXML
     void changeColor(MyCompiler compilerForTest) {
@@ -173,8 +193,6 @@ private String status;
     public void chooseCatalog(boolean babysteps){
         String fileName=setCatalog();
         ParseUnit parseUnit = new ParseUnit(fileName, babysteps);
-        MyJavaFile testFile;
-        MyJavaFile classFile;
         if(!babysteps) {
             testFile = new MyJavaFile(parseUnit.getWithoutBabystepsTestName());
             classFile = new MyJavaFile(parseUnit.getWithoutBabystepsClassName());

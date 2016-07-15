@@ -82,7 +82,6 @@ public class ParseUnit {
             if(babysteps)
                 x=1;
             else x=0;
-
             String    testDirection=direction.replaceAll("out/","test/");
             fileForTest = new File(testDirection + testName[x] + ".java");
             fileForClass = new File(testDirection + className[x] + ".java");
@@ -101,23 +100,15 @@ public class ParseUnit {
             javaFileForClass=new MyJavaFile(fileForClass.getName()) ;
 
         } catch (Exception e) {}
+    }
 
-    }
-    public MyJavaFile getJavaClassFile(){
-        return javaFileForClass;
-    }
-    public MyJavaFile getJavaTestFile(){
-        return javaFileForTest;
-    }
     public String getWithBabystepsTestName(){
         return testName[1];
     }
     public String getWithBabystepsClassName(){
         return className[1];
     }
-    public String getWithoutBabystepsClassName(){
-        return className[0];
-    }
+    public String getWithoutBabystepsClassName(){return className[0];}
     public String getWithoutBabystepsTestName(){
         return testName[0];
     }

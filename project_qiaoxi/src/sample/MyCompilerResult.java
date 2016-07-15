@@ -4,6 +4,7 @@ import vk.core.api.CompilationUnit;
 import vk.core.api.CompileError;
 import vk.core.api.CompilerResult;
 
+import java.io.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -14,31 +15,37 @@ import java.util.Collection;
  */
 public class MyCompilerResult {
     String name;
-    Duration compileDuration;
-    boolean hasCompileErrors;
-    String errors;
+   Duration duration;
+    int compileErrors;
+    File errors;
 
-    public MyCompilerResult(String name,Duration duration,boolean hasCompileErrors,String errors){
+    public MyCompilerResult(String name, int compileErrors, File errors, Duration duration){
 
         this.name=name;
-        this.compileDuration=duration;
-        this.hasCompileErrors=hasCompileErrors;
+     this.duration=duration;
+        this.compileErrors=compileErrors;
         this.errors=errors;
     }
-    public boolean hasCompileErrors(){
-       return hasCompileErrors;
-   }
-
-  public  Duration getCompileDuration(){
 
 
-        return compileDuration;
-    }
-
-
- public  String getCompilerErrorsForCompilationUnit(CompilationUnit cu){
-
-        return errors;
+  public String toString(){
+      String stringErrors = "There is no compiling error.\n";
+      try {
+          if (errors.isFile() && errors.exists()) {
+              InputStreamReader read = new InputStreamReader(new FileInputStream(errors));
+              BufferedReader bufferedReader = new BufferedReader(read);
+              StringBuilder stringBuilder = new StringBuilder();
+              String line = null;
+              while ((line = bufferedReader.readLine()) != null) {
+                  stringBuilder.append(line);
+                  stringBuilder.append("\n");
+              }
+              bufferedReader.close();
+              stringErrors = stringBuilder.toString();
+              read.close();
+          }
+      } catch (Exception e) {}
+        return stringErrors;
     }
 
 }

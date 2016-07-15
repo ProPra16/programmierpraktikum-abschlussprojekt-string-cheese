@@ -22,7 +22,7 @@ public class MyCompiler  {
 
     String direction = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     CompilationUnit compilationUnit;
-    String name;
+    private String name;
     MyCompilerResult compilerResult;
     MyTestResult testResult;
 
@@ -31,7 +31,7 @@ public class MyCompiler  {
         this.name = fileName;
         this.compilationUnit = getCompilationUnitByName(fileName);
     }
-
+public String getName(){return name;}
     static class MyDiagnosticListener implements DiagnosticListener {
         @Override
         public void report(Diagnostic diagnostic) {
@@ -69,17 +69,19 @@ public class MyCompiler  {
                 Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(path));
                Iterable<String> options = Arrays.asList("-d", direction+"test/");
                Instant start = Instant.now();
+               //PrintStream ps=null;
+               File outputErrors = new File(direction+"errorTracking.txt");
                JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, options, null, javaFileObjects);
-               try {
-                   File outputErrors = new File(direction+"errorstracking.txt");
-                   PrintStream ps=new PrintStream(direction+"errorstracking.txt");
-                   System.setOut(ps); } catch (FileNotFoundException e) {}
+              // try {
+             //    ps=new PrintStream(direction+"errorstrack.txt");
+             //      System.setErr(ps); } catch (FileNotFoundException e) {}
                boolean success = task.call();
-               int result = compiler.run(null,null,null,path);
-               System.out.println("RESSSSULT:"+result);
-               Instant end = Instant.now();
 
-               compilerResult = new MyCompilerResult(compilationUnit.getClassName(),Duration.between(start, end),!success,null);
+               int result = compiler.run(null,null,null,path);
+               Instant end = Instant.now();
+             compilerResult= new MyCompilerResult(compilationUnit.getClassName(),result,outputErrors,Duration.between(start, end));
+
+
 
                fileManager.close();
 
