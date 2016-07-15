@@ -10,8 +10,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import java.nio.file.Paths;
+
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class MenuController {
     private static Stage primaryStage;
@@ -21,6 +26,8 @@ public class MenuController {
     private MenuItem save;
     @FXML
     private MenuItem close;
+    @FXML 
+    private MenuItem tracking;
     @FXML
     private TextArea editor;
     @FXML
@@ -30,10 +37,14 @@ public class MenuController {
     @FXML
     private Label statuslabel;
     @FXML
+    private Label timelabel;
+    @FXML
     private ListView<Exercise> exercises;
     @FXML
     private Label descriptionlabel;
     private Catalog catalog;
+    private File directory;
+    private Exercise currentexe;
     public Main main;
     
     @FXML
@@ -42,10 +53,65 @@ public class MenuController {
     
     @FXML
     protected void open(ActionEvent event) {
+        FileChooser dialog = new FileChooser();
+        dialog.setTitle("Select a file");
+        dialog.setInitialDirectory(Paths.get("src/Tests").toFile()); 
+        dialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
+        File file = dialog.showOpenDialog(primaryStage);
 
+        if(file == null) {
+            return;
+        }
+
+
+        try {
+        	catalog = new Parsercat().parse(file);
+        } catch (Exception e) {
+            System.err.println("Fehler beim Parsen des Katalogs aufgetreten");
+            return;
+        }
+
+        catalog.loadExercises(editor, test, descriptionlabel, exercises);
+                
     }
 
-    @FXML
+
+    private void speichernAbfrage(Saveoption option) {
+        if(currentexe != null) {
+            ButtonType ja = new ButtonType("Y");
+            ButtonType nein = new ButtonType("N");
+            String abfrage = "bevor zu einer anderen Aufgabe gewechselt wird";
+            if (option == Saveoption.Close) {
+                abfrage = "bevor das Programm geschlossen wird?";
+            }
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "You want save, " + abfrage, ja, nein);
+
+            alert.setHeaderText("");
+            alert.setTitle("");
+            alert.showAndWait();
+            if (alert.getResult() == ja) {
+                save(null);
+            }
+        }
+    }
+
+
+
+    private boolean continueAbfrage() {
+        ButtonType ja = new ButtonType("Ja");
+        ButtonType nein = new ButtonType("Nein");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Diese Aufgabe hast du bereits bearbeitet. Möchtest du daran weiterarbeiten?", ja, nein);
+        alert.setHeaderText("");
+        alert.setTitle("");
+        alert.showAndWait();
+        if(alert.getResult() == ja) {
+            return true;
+        }
+        return false;
+    }
+
+
+	@FXML
     protected void save(ActionEvent event) {
         DirectoryChooser dialog = new DirectoryChooser();
         dialog.setTitle("Choose the directory");
@@ -57,6 +123,10 @@ public class MenuController {
     protected void close(ActionEvent event) {
     	System.exit(0);
     }
+    protected void tracking(ActionEvent event) {
+    	System.exit(0);
+    }
+
 
     @FXML
     protected void next(ActionEvent event) {
@@ -83,10 +153,28 @@ public class MenuController {
 
     @FXML
     protected void chooseExercise(MouseEvent event) {
-        
-    }
+    	 if(exercises.getSelectionModel().getSelectedItem() == null) {
+             return;
+         }
+         Exercise exercise = exercises.getSelectionModel().getSelectedItem();
+         catalog.loadExercises(editor, test, descriptionlabel, exercises);
+       
+        // Babysteps baby = new Babysteps(exercise, statuslabel);
+     }
+
+
 
     public static void setStage (Stage stage) {
         primaryStage = stage;
     }
+
+	public Object getText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setText(String string) {
+		// TODO Auto-generated method stub
+		
+	}
 }
