@@ -14,6 +14,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.event.ActionEvent;
+
+import static java.lang.Thread.sleep;
+
 public class MyController {
     Stage stage;
     @FXML
@@ -41,6 +44,9 @@ public class MyController {
     VBox colorPanel = new VBox();
 
     @FXML
+    Label babystepswarning ;
+
+    @FXML
     Button back = new Button();
 
     @FXML
@@ -53,7 +59,8 @@ public class MyController {
     String direction = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     private MyCompiler compilerForTest;
     private MyCompiler compilerForClass;
-private String status;
+    boolean babysteps;
+    String status;
     private MyClock rClock;
     private MyClock gClock;
     private MyClock wClock;
@@ -62,15 +69,16 @@ private String status;
     MyJavaFile classFile;
 
     public void init(Stage primaryStage) {
-
-
        // analysis.setOnAction(e ->{AlertBox track = new AlertBox(); track.display("EEE","error");});
         this.stage = stage;
         textAreaForClass.setDisable(true);
+        textAreaForTest.setDisable(true);
+        save.setDisable(true);
+        back.setDisable(true);
+        analysis.setDisable(true);
         colorPanel.setStyle("-fx-background-color: grey;");
         String filePath = Thread.currentThread().getContextClassLoader().getResource("").getPath()+"test";
         File fp = new File(filePath);
-
         if (!fp.exists()) {
             fp.mkdirs();
         }
@@ -79,27 +87,32 @@ private String status;
         wClock = new MyClock();
         myTracking = new MyTracking(rClock,gClock,wClock);
         tracking.getChildren().add(myTracking);
-        System.out.println("CLOCKKKK::::"+rClock);
 
     }
     @FXML
     public void setWithbabysteps() {
-       chooseCatalog(true);
+        withbabysteps.setStyle("-fx-background-color: yellow;");
+        chooseCatalog(true);
         colorPanel.setStyle("-fx-background-color: red;");
-        gClock.reset();
-        wClock.reset();
-        rClock.reset();
+        gClock.reset(true);
+        wClock.reset(false);
+        rClock.reset(true);
         rClock.runClock();
-        myTracking.refresh();
+        babysteps =true;
+       new Thread(){
+           public void run(){
+            startCounting();}
+        }.start();
+
     }
     @FXML
     public void setWithoutbabysteps() {
-
+        babysteps= false;
         chooseCatalog(false);
         colorPanel.setStyle("-fx-background-color: red;");
-        gClock.reset();
-        wClock.reset();
-        rClock.reset();
+        gClock.reset(false);
+        wClock.reset(false);
+        rClock.reset(false);
         rClock.runClock();
         myTracking.refresh();
     }
@@ -120,34 +133,39 @@ private String status;
     }
     @FXML
     void clickSaveButton() {
+        System.out.println(rClock.getTiming());
+        System.out.println("WWW:"+wClock.getTiming());
       testFile = new MyJavaFile(compilerForTest.getName());
       classFile = new MyJavaFile(compilerForClass.getName());
         if (testFile != null && classFile != null) {
             saveFile(textAreaForTest.getText(), testFile);
             saveFile(textAreaForClass.getText(), classFile);
         }
-        System.out.println("TESTFFFFFF:"+testFile.getFileContent());
         compilerForClass.compileAndRunTests();
         compilerForTest.compileAndRunTests();
         testResults.setText(compilerForTest.getTestResult().toString());
         compileResults.setText(compilerForClass.getCompilerResult().toString());
-       int fails = compilerForTest.getTestResult().getNumberOfFailedTests();
+        int fails = compilerForTest.getTestResult().getNumberOfFailedTests();
         int success = compilerForTest.getTestResult().getNumberOfSuccessfulTests();
-        if (fails !=0 && success!=0) {
+
+        if (fails ==0 && success!=0) {
             textAreaForClass.setDisable(false);
         }
         changeColor(compilerForTest);
-
-            myTracking.configureHbox();
+        if(status.equals("green")){
+            back.setDisable(false);
+        }
+        myTracking.configureHbox();
         }
 
     @FXML
     void clickBackButton(){
-        System.out.println("CLICKBOTTON::::");
-       textAreaForTest.clear();
+
+        textAreaForTest.clear();
         textAreaForTest.setText(testFile.getFileContent());
         textAreaForClass.clear();
         textAreaForClass.setText(classFile.getFileContent());
+
     }
 
     @FXML
@@ -184,6 +202,9 @@ private String status;
         String fileName = file.getName();
         if (file != null) {
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
+            textAreaForTest.setDisable(false);
+            save.setDisable(false);
+            analysis.setDisable(false);
         }
         else fileName="This File doesn't exist.";
         return fileName;
@@ -216,4 +237,32 @@ private String status;
         } catch (IOException e) {
         }
     }
-}
+    public void startCounting() {
+                while (rClock.isRun()) {
+                    System.out.println(rClock.getTiming());
+                    if (rClock.getWarning()) {
+                        rClock.setWarning(false);
+                        System.out.println("WWWWWWWWWWWWWWWW");
+                       // babystepswarning = new Label();
+                       // babystepswarning.setText("WWW");
+                       break;
+                    }
+                //    myTracking.refresh();
+                    if (rClock.getAgain() || gClock.getAgain()) {
+                        textAreaForClass.clear();
+                        textAreaForClass.clear();
+                        textAreaForTest.setText(testFile.getFileContent());
+                        textAreaForClass.setText(classFile.getFileContent());
+                        rClock.setAgainAndWarning(false, false);
+                        babystepswarning.setDisable(true);
+                        break;
+                    }
+                    try {
+                        sleep(1000); //暂停，每一秒输出一次
+                    }catch (InterruptedException e) {
+                        return;
+                    }
+                }
+            }
+
+    }

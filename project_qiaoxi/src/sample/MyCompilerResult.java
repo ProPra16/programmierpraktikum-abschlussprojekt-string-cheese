@@ -22,11 +22,10 @@ public class MyCompilerResult {
     public MyCompilerResult(String name, int compileErrors, File errors, Duration duration){
 
         this.name=name;
-     this.duration=duration;
+        this.duration=duration;
         this.compileErrors=compileErrors;
         this.errors=errors;
     }
-
 
   public String toString(){
       String stringErrors = "There is no compiling error.\n";
