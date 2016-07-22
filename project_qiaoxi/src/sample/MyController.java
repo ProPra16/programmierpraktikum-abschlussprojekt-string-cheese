@@ -135,7 +135,7 @@ public class MyController {
     }
 
     @FXML
-    public void setWithbabysteps() {
+    public void setWithbabysteps()throws MyException {
         startAlert();
         if (!start) {
             chooseCatalog(true);
@@ -153,7 +153,7 @@ public class MyController {
     }
 
     @FXML
-    public void setWithoutbabysteps() {
+    public void setWithoutbabysteps()throws MyException {
        startAlert();
         if (!start) {
             chooseCatalog(false);
@@ -298,7 +298,7 @@ error=error+"\nand your TEST CODES are saved at:\n" +direction.replaceAll("out/"
         return fileName;
     }
 
-    public void chooseCatalog(boolean babysteps) {
+    public void chooseCatalog(boolean babysteps)throws MyException {
         String fileName = setCatalog();
         boolean parseSuccess=true;
         if (fileName != null) {
