@@ -17,6 +17,8 @@ public class Main extends Application{
         Scene scene = new Scene(root);
         MyController controller = (MyController)loader.getController();
         controller.init(primarystage);
+        primarystage.setTitle("SMART TESTING");
+
         primarystage.setScene(scene);
         primarystage.show();
         primarystage.setOnCloseRequest(e-> {

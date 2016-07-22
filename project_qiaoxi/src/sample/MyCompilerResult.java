@@ -16,7 +16,7 @@ import java.util.Collection;
 public class MyCompilerResult {
     String name;
    Duration duration;
-    int compileErrors;
+  private  int compileErrors;
     File errors;
 
     public MyCompilerResult(String name, int compileErrors, File errors, Duration duration){
@@ -46,5 +46,5 @@ public class MyCompilerResult {
       } catch (Exception e) {}
         return stringErrors;
     }
-
+public int getCompileErrors(){return compileErrors;}
 }

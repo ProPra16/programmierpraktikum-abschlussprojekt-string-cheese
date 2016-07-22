@@ -3,18 +3,14 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
 import java.util.*;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
-
 import vk.core.api.CompilationUnit;
-
 import javax.tools.*;
 import java.time.Duration;
 import java.time.Instant;
 import org.junit.runner.Result;
-
 /**
  * Created by lqx on 07/07/16.
  */
@@ -26,35 +22,11 @@ public class MyCompiler  {
     MyCompilerResult compilerResult;
     MyTestResult testResult;
 
-
     public MyCompiler(String fileName) {
         this.name = fileName;
         this.compilationUnit = getCompilationUnitByName(fileName);
     }
-public String getName(){return name;}
-    static class MyDiagnosticListener implements DiagnosticListener {
-        @Override
-        public void report(Diagnostic diagnostic) {
-            StringBuilder errors = new StringBuilder();
-            errors.append("\nCode          ->" + diagnostic.getCode());
-            errors.append("\nColumn Number ->" + diagnostic.getColumnNumber());
-            errors.append("\nEnd Position  ->" + diagnostic.getEndPosition());
-            errors.append("\nKind          ->" + diagnostic.getKind());
-            errors.append("\nLine Number   ->" + diagnostic.getLineNumber());
-            errors.append("\nMessage       ->" + diagnostic.getMessage(Locale.ENGLISH));
-            errors.append("\nPosition      ->" + diagnostic.getPosition());
-            errors.append("\nSource        ->" + diagnostic.getSource());
-            errors.append("\nStart Position->" + diagnostic.getStartPosition());
-            File outputErrors = new File(Thread.currentThread().getContextClassLoader().getResource("").getPath()+"errorTracking.txt");
-            try {
-                BufferedWriter bw = new BufferedWriter(new FileWriter(outputErrors));
-                bw.write(errors.toString());
-                bw.newLine();
-                bw.close();
-            }catch(Exception e){}
-            }
-        }
-
+    public String getName(){return name;}
 
     public void compileAndRunTests() {
            try{ if (!compilationUnit.isATest()) {
@@ -62,35 +34,22 @@ public String getName(){return name;}
                String[] path = new String[2];
                path[1]=testDirection + compilationUnit.getClassName() + ".java";
                path[0]=testDirection + compilationUnit.getClassName() + "Test.java";
-                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
+               JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
                MyDiagnosticListener diagnosticListener = new MyDiagnosticListener();
-                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, null, null);
-                Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(path));
+               StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, null, null);
+               Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(path));
                Iterable<String> options = Arrays.asList("-d", direction+"test/");
                Instant start = Instant.now();
-               //PrintStream ps=null;
                File outputErrors = new File(direction+"errorTracking.txt");
                JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, options, null, javaFileObjects);
-              // try {
-             //    ps=new PrintStream(direction+"errorstrack.txt");
-             //      System.setErr(ps); } catch (FileNotFoundException e) {}
                boolean success = task.call();
-
                int result = compiler.run(null,null,null,path);
                Instant end = Instant.now();
-             compilerResult= new MyCompilerResult(compilationUnit.getClassName(),result,outputErrors,Duration.between(start, end));
-
-
-
+               compilerResult= new MyCompilerResult(compilationUnit.getClassName(),result,outputErrors,Duration.between(start, end));
                fileManager.close();
-
            }
-        } catch (Exception e) {
-        }
-
+           } catch (Exception e) {}
         if (compilationUnit.isATest()) {
-
             File root = new File(direction+"test");
             URLClassLoader classLoader = null;
             System.out.println("TESTCOMPIL RUN:"+direction+"test");
@@ -136,10 +95,30 @@ public String getName(){return name;}
     }
 
     public CompilationUnit getCompilationUnitByName(String name) {
-
         MyJavaFile javaFile = new MyJavaFile(name);
         CompilationUnit compilationUnit = new CompilationUnit(javaFile.getFileName(), javaFile.getFileContent(), javaFile.isATest());
-
         return compilationUnit;
+    }
+
+    static class MyDiagnosticListener implements DiagnosticListener {
+        @Override
+        public void report(Diagnostic diagnostic) {
+            StringBuilder errors = new StringBuilder();
+            errors.append("\n Code          ->" + diagnostic.getCode());
+            errors.append("\n Column Number ->" + diagnostic.getColumnNumber());
+            errors.append("\n End Position  ->" + diagnostic.getEndPosition());
+            errors.append("\n Kind          ->" + diagnostic.getKind());
+            errors.append("\n Line Number   ->" + diagnostic.getLineNumber());
+            errors.append("\n Message       ->" + diagnostic.getMessage(Locale.ENGLISH));
+            errors.append("\n Position      ->" + diagnostic.getPosition());
+            errors.append("\n Start Position->" + diagnostic.getStartPosition());
+            File outputErrors = new File(Thread.currentThread().getContextClassLoader().getResource("").getPath()+"errorTracking.txt");
+            try {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(outputErrors));
+                bw.write(errors.toString());
+                bw.newLine();
+                bw.close();
+            }catch(Exception e){}
+        }
     }
 }

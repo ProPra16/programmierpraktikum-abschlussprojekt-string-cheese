@@ -18,6 +18,18 @@ public class AlertBox {
     final VBox vb = new VBox();
     Label fileName = new Label();
 
+    public AlertBox(int width,int height){
+        VBox box = new VBox();
+        Scene scene = new Scene(box,width,height);
+        this.window.setMinWidth(width);
+        this.window.setMinHeight(height);
+        window.setScene(scene);
+        box.getChildren().addAll(sp,fileName);
+        VBox.setVgrow(sp, Priority.ALWAYS);
+        fileName.setLayoutY(30);
+        fileName.setLayoutX(100);
+
+    }
     public AlertBox(){
         VBox box = new VBox();
         Scene scene = new Scene(box,480,480);

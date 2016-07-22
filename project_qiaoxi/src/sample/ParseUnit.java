@@ -1,14 +1,11 @@
 package sample;
 
+import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import java.io.BufferedWriter;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.File;
-import java.io.FileWriter;
+
+import java.io.*;
 import java.util.Iterator;
 
 /** Through this class, the programm can parse the "catalog" file( example here: excersices.xml) to .java file.
@@ -17,6 +14,8 @@ import java.util.Iterator;
  */
 
 public class ParseUnit {
+    String parseError;
+  //  boolean success;
     String direction = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     String xmlFileName;
     String[] testName=new String[2];
@@ -25,6 +24,7 @@ public class ParseUnit {
     String[] classContent=new String[2];
     MyJavaFile javaFileForTest;
     MyJavaFile javaFileForClass;
+   private int babaystepsTime;
     public ParseUnit(String xmlFileName, boolean babysteps) {
        this.xmlFileName=xmlFileName;
         createJavaFile(babysteps);
@@ -32,43 +32,62 @@ public class ParseUnit {
     }
 
     public void parseXML() throws Exception {
-        java.io.File file = new java.io.File(direction + "sample/" + xmlFileName + ".xml");
+        try {
+            java.io.File file = new java.io.File(direction + "sample/" + xmlFileName + ".xml");
 
-        SAXReader reader = new SAXReader();
-        Document document = reader.read(file);
-        Element rootElement = document.getRootElement();
+            SAXReader reader = new SAXReader();
+            Document document = reader.read(file);
+            Element rootElement = document.getRootElement();
 
-        Iterator exerciseElement = rootElement.elementIterator("exercise");
-        int i;
-        // lesen die child node(naemlich <exercise> ein.
-        while (exerciseElement.hasNext()) {
-            Element childElement = (Element) exerciseElement.next();
-            Iterator configIterator = childElement.elementIterator("config");
-            while (configIterator.hasNext()) {
-                Element configItem = (Element) configIterator.next();
-                Iterator babystepsIterator = configItem.elementIterator("babysteps");
-                Element babystepsElement = (Element) babystepsIterator.next();
-                if(babystepsElement.attributeValue("value").equals("True"))
-                    i=1;
-                else
-                    i=0;
+            Iterator exerciseElement = rootElement.elementIterator("exercise");
+            int i;
+            if(!exerciseElement.hasNext())
+                throw new Exception("There is not a label named exercise.");
+            // lesen die child node(naemlich <exercise> ein.
+            while (exerciseElement.hasNext()) {
+                Element childElement = (Element) exerciseElement.next();
+                Iterator configIterator = childElement.elementIterator("config");
+                if(!configIterator.hasNext())
+                    throw new Exception("There is not a label named config.");
+                while (configIterator.hasNext()) {
+                    Element configItem = (Element) configIterator.next();
+                    Iterator babystepsIterator = configItem.elementIterator("babysteps");
+                    Element babystepsElement = (Element) babystepsIterator.next();
+                    if (babystepsElement.attributeValue("value").equals("True")) {
+                        i = 1;
+                        String stringTime = babystepsElement.attributeValue("time");
+                        String[] partTimes = stringTime.split(":");
+                        babaystepsTime = Integer.parseInt(partTimes[0]) * 60 + Integer.parseInt(partTimes[1]);
+                    }
+                    // lesen die babysteps begrenzende Zeit ein.
+                    else
+                        i = 0;
                     Iterator testsIterator = childElement.elementIterator("tests");
-                Iterator classesIterator = childElement.elementIterator("classes");
+                    Iterator classesIterator = childElement.elementIterator("classes");
+                   // if(!testsIterator.hasNext())
+                   //     throw new Exception("There is not a label named tests.");
+                   // if(!classesIterator.hasNext())
+                  //      throw new Exception("There is not a label named classes.");
                     while (testsIterator.hasNext()) {
                         Element testsItem = (Element) testsIterator.next();
                         Iterator classIterator = testsItem.elementIterator("test");
                         Element testNameElement = (Element) classIterator.next();
                         testName[i] = testNameElement.attributeValue("name");
                         testContent[i] = testsItem.elementText("test");
-                     } // lesen die Elements unter dem <tests> ein.
+                    } // lesen die Elements unter dem <tests> ein.
                     while (classesIterator.hasNext()) {
-                    Element classesItem = (Element) classesIterator.next();
-                    classContent[i] = classesItem.elementText("class");
-                    Iterator classIterator = classesItem.elementIterator("class");
-                    Element classNameElement = (Element) classIterator.next();
-                    className[i] = classNameElement.attributeValue("name");
-                } // lesen die Elements unter  dem <classes> ein.
+                        Element classesItem = (Element) classesIterator.next();
+                        classContent[i] = classesItem.elementText("class");
+                        Iterator classIterator = classesItem.elementIterator("class");
+                        Element classNameElement = (Element) classIterator.next();
+                        className[i] = classNameElement.attributeValue("name");
+                    } // lesen die Elements unter  dem <classes> ein.
+                }
             }
+        }catch(Exception e){
+       //     StringWriter sw = new StringWriter();
+        //    e.printStackTrace(new PrintWriter(sw));
+       //     parseError=sw.getBuffer().toString();
         }
         }
 
@@ -99,12 +118,14 @@ public class ParseUnit {
            javaFileForTest=new MyJavaFile(fileForTest.getName()) ;
             javaFileForClass=new MyJavaFile(fileForClass.getName()) ;
 
-        } catch (Exception e) {}
+        } catch (Exception e) {AlertBox parseFail = new AlertBox(400,150);
+            parseFail.display("Parse Fail","\n\n The format of this file(.xml) is illegal.\n Please read the user guide to create correct format of the file.");xmlFileName=null;}
     }
 
-    public String getWithBabystepsTestName(){
-        return testName[1];
+    public String getXmlFileName(){
+        return xmlFileName;
     }
+    public String getWithBabystepsTestName(){return testName[1];}
     public String getWithBabystepsClassName(){
         return className[1];
     }
@@ -112,4 +133,5 @@ public class ParseUnit {
     public String getWithoutBabystepsTestName(){
         return testName[0];
     }
+    public int getBabaystepsTime(){return babaystepsTime;}
 }
